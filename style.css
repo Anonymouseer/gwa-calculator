@@ -277,6 +277,7 @@ input:checked + .slider:before {
 @media (max-width: 950px) {
     main {
         flex-direction: column;
+        align-items: center;
         gap: 30px;
     }
     .info-panel {
