@@ -43,24 +43,28 @@ body {
 main {
     flex-grow: 1;
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     padding: 20px;
-    gap: clamp(1.875rem, 4vw, 3.125rem);
+}
+
+.content-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
 }
 
 .calculator-container {
-    background-color: var(--container-bg);
-    padding: 30px 40px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px var(--shadow-color);
-    width: 100%;
-    max-width: 500px;
-    text-align: center;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: var(--container-bg);
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px var(--shadow-color);
+  max-width: 500px;
+  text-align: center;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
-
 .header {
     display: flex;
     justify-content: space-between;
@@ -275,10 +279,10 @@ input:checked + .slider:before {
 }
 
 @media (max-width: 950px) {
-    main {
+    /* This wrapper ensures the content stacks vertically on smaller screens */
+    .content-wrapper {
         flex-direction: column;
         align-items: center;
-        gap: 30px;
     }
     .info-panel {
         text-align: center;
