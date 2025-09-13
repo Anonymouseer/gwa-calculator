@@ -12,6 +12,9 @@
     --primary-hover-gradient: linear-gradient(45deg, #0069d9, #004a99);
     --secondary-gradient: linear-gradient(45deg, #28a745, #1e7e34);
     --secondary-hover-gradient: linear-gradient(45deg, #218838, #155d27);
+    --summa-gradient: linear-gradient(45deg, #FFD700, #FFA500);
+    --magna-gradient: linear-gradient(45deg, #c0c0c0, #87CEEB);
+    --cum-laude-gradient: linear-gradient(45deg, #cd7f32, #e69138);
 }
 
 body.dark-mode {
@@ -28,6 +31,9 @@ body.dark-mode {
     --primary-hover-gradient: linear-gradient(45deg, #5aa4ff, #0052a9);
     --secondary-gradient: linear-gradient(45deg, #30c555, #218c3d);
     --secondary-hover-gradient: linear-gradient(45deg, #49d369, #1a682e);
+    --summa-gradient: linear-gradient(45deg, #fde24b, #ffc54d);
+    --magna-gradient: linear-gradient(45deg, #d8d8d8, #a1d9f7);
+    --cum-laude-gradient: linear-gradient(45deg, #e09a5f, #f0a85c);
 }
 
 body {
@@ -43,9 +49,11 @@ body {
 main {
     flex-grow: 1;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 20px;
+    gap: 40px;
 }
 
 .content-wrapper {
@@ -63,7 +71,12 @@ main {
   box-shadow: 0 10px 30px var(--shadow-color);
   max-width: 500px;
   text-align: center;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.calculator-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px var(--shadow-color);
 }
 .header {
     display: flex;
@@ -87,19 +100,20 @@ p {
 }
 
 .setup-section {
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.setup-section, .subject-row {
     display: flex;
     gap: 10px;
     align-items: center;
     margin-bottom: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .subject-row {
+    display: flex;
     justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
 label {
@@ -155,15 +169,47 @@ button:hover {
     background-image: var(--primary-hover-gradient);
 }
 
-#calculate-gwa-btn {
+#actions-section {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+#reset-btn, #calculate-gwa-btn {
     width: 100%;
     padding: 12px;
-    margin-top: 20px;
+}
+
+#calculate-gwa-btn {
     background-image: var(--secondary-gradient);
 }
 
 #calculate-gwa-btn:hover {
     background-image: var(--secondary-hover-gradient);
+}
+
+#reset-btn {
+    background: none;
+    background-color: var(--input-bg);
+    color: var(--sub-text-color);
+    border: 1px solid var(--border-color);
+}
+
+#reset-btn:hover {
+    background-color: var(--border-color);
+    color: var(--text-color);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+#share-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background-image: var(--primary-gradient);
+}
+
+#share-btn:hover {
+    background-image: var(--primary-hover-gradient);
 }
 
 #result-container {
@@ -184,7 +230,7 @@ button:hover {
 
 .latin-honor {
     display: block;
-    font-size: 20px;
+    font-size: 17px;
     margin-top: 10px;
     font-weight: 600;
     background-clip: text;
@@ -202,6 +248,14 @@ button:hover {
 
 .cum-laude {
     background-image: var(--cum-laude-gradient);
+}
+
+.gwa-message {
+    display: block;
+    font-size: 17px;
+    font-weight: normal;
+    margin-top: 10px;
+    color: var(--sub-text-color);
 }
 
 .info-panel {
@@ -278,8 +332,16 @@ input:checked + .slider:before {
     display: none;
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
 @media (max-width: 950px) {
-    /* This wrapper ensures the content stacks vertically on smaller screens */
     .content-wrapper {
         flex-direction: column;
         align-items: center;

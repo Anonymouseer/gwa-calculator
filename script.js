@@ -2,9 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
 const numSubjectsInput = document.getElementById('num-subjects');
 const generateBtn = document.getElementById('generate-fields-btn');
 const inputsContainer = document.getElementById('subject-inputs-container');
-const calculationSection = document.getElementById('calculation-section');
+const actionsSection = document.getElementById('actions-section');
 const calculateBtn = document.getElementById('calculate-gwa-btn');
 const resultContainer = document.getElementById('result-container');
+const resetBtn = document.getElementById('reset-btn');
+const shareBtn = document.getElementById('share-btn');
 const themeToggle = document.getElementById('theme-toggle');
 const body = document.body;
 
@@ -24,21 +26,64 @@ const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-schem
 
 applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
 
+    const populateFromURL = () => {
+        const params = new URLSearchParams(window.location.search);
+        const grades = params.get('grades')?.split(',');
+        const units = params.get('units')?.split(',');
+        const names = params.get('names')?.split(',');
+
+        if (!grades || !units || grades.length !== units.length) {
+            return;
+        }
+
+        numSubjectsInput.value = grades.length;
+        generateBtn.click();
+
+        const subjectRows = document.querySelectorAll('.subject-row');
+        subjectRows.forEach((row, i) => {
+            row.querySelector('.grade-input').value = grades[i];
+            row.querySelector('.units-input').value = units[i];
+            if (names && names[i]) {
+                row.querySelector('.subject-name-input').value = names[i];
+            }
+        });
+
+        calculateBtn.click();
+        window.history.replaceState({}, document.title, window.location.pathname);
+    };
+
+    const handleShare = () => {
+        const subjectRows = document.querySelectorAll('.subject-row');
+        const data = Array.from(subjectRows).map(row => ({
+            name: row.querySelector('.subject-name-input').value,
+            grade: row.querySelector('.grade-input').value,
+            unit: row.querySelector('.units-input').value
+        }));
+
+        const params = new URLSearchParams();
+        params.set('names', data.map(d => d.name).join(','));
+        params.set('grades', data.map(d => d.grade).join(','));
+        params.set('units', data.map(d => d.unit).join(','));
+
+        const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+        navigator.clipboard.writeText(shareUrl).then(() => alert('Sharable link copied to clipboard!'));
+    };
+
 const getLatinHonor = (gwa) => {
         if (gwa >= 1.0 && gwa <= 1.20) {
-            return { text: 'Summa Cum Laude', className: 'summa' };
+            return { text: 'Summa Cum Laude Congrats! proud kami sayo!', className: 'summa' };
         } else if (gwa > 1.20 && gwa <= 1.45) {
-            return { text: 'Magna Cum Laude', className: 'magna' };
+            return { text: 'Magna Cum Laude Congratulations! proud kami sayo', className: 'magna' };
         } else if (gwa > 1.45 && gwa <= 1.75) {
-            return { text: 'Cum Laude', className: 'cum-laude' };
+            return { text: 'Cum Laude, Congratulations! proud kami sayo!', className: 'cum-laude' };
         }
         return null;
     };
 
     const getGwaMessage = (gwa) => {
         let message = '';
-        if (gwa < 3.0) {
-            message = 'muntik kana, Keep it up! haha';
+        if (gwa < 3.0 && gwa > 1.75) {
+            message = 'pasado ka na sa next level! keep it up!';
         } else if (gwa === 3.0) {
             message = 'safe ka pa ropa, keep it up!';
         } else if (gwa > 3.0 && gwa < 5.0) {
@@ -49,6 +94,19 @@ const getLatinHonor = (gwa) => {
         return message ? `<br><span class="gwa-message">${message}</span>` : '';
     };
 
+    const createSubjectRow = (index) => {
+        const subjectRow = document.createElement('div');
+        subjectRow.classList.add('subject-row', 'fade-in');
+        subjectRow.innerHTML = `
+            <input type="text" class="subject-name-input" placeholder="Subject ${index} Name" aria-label="Subject ${index} Name">
+            <div class="subject-inputs">
+                <input type="number" class="grade-input" placeholder="Grade" step="0.01" aria-label="Grade for Subject ${index}">
+                <input type="number" class="units-input" placeholder="Units" step="0.1" aria-label="Units for Subject ${index}">
+            </div>
+        `;
+        return subjectRow;
+    };
+
 generateBtn.addEventListener('click', () => {
         const numSubjects = parseInt(numSubjectsInput.value);
         inputsContainer.innerHTML = '';
@@ -56,25 +114,18 @@ generateBtn.addEventListener('click', () => {
 
         if (isNaN(numSubjects) || numSubjects <= 0) {
             resultContainer.textContent = 'Please enter a valid number of subjects.';
-            calculationSection.classList.add('hidden');
+            actionsSection.classList.add('hidden');
+            shareBtn.classList.add('hidden');
             return;
         }
 
         for (let i = 1; i <= numSubjects; i++) {
-            const subjectRow = document.createElement('div');
-            subjectRow.classList.add('subject-row');
-            
-            subjectRow.innerHTML = `
-                <input type="text" class="subject-name-input" placeholder="Subject ${i} Name">
-                <div class="subject-inputs">
-                    <input type="number" class="grade-input" placeholder="Grade" step="0.01">
-                    <input type="number" class="units-input" placeholder="Units" step="0.1">
-                </div>
-            `;
+            const subjectRow = createSubjectRow(i);
             inputsContainer.appendChild(subjectRow);
         }
         
-        calculationSection.classList.remove('hidden');
+        actionsSection.classList.remove('hidden');
+        shareBtn.classList.add('hidden');
     });
 
 calculateBtn.addEventListener('click', () => {
@@ -94,7 +145,7 @@ calculateBtn.addEventListener('click', () => {
 
             if (isNaN(grade) || isNaN(units) || units <= 0) {
                 resultContainer.textContent = `Error: Please enter valid numbers for "${subjectName}". Units must be positive.`;
-                return; // Exit early on validation failure
+                return;
             }
 
             totalWeightedGrades += grade * units;
@@ -113,8 +164,22 @@ calculateBtn.addEventListener('click', () => {
             }
 
             resultContainer.innerHTML = `GWA: <span>${gwa.toFixed(2)}</span>${messageHTML}`;
+            shareBtn.classList.remove('hidden');
         } else {
             resultContainer.textContent = 'No units entered. Cannot calculate GWA.';
+            shareBtn.classList.add('hidden');
         }
     });
+
+    resetBtn.addEventListener('click', () => {
+        inputsContainer.innerHTML = '';
+        resultContainer.innerHTML = '';
+        numSubjectsInput.value = '';
+        actionsSection.classList.add('hidden');
+        shareBtn.classList.add('hidden');
+    });
+
+    shareBtn.addEventListener('click', handleShare);
+
+    populateFromURL();
 });
