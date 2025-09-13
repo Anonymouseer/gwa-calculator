@@ -98,7 +98,7 @@ const getLatinHonor = (gwa) => {
         const subjectRow = document.createElement('div');
         subjectRow.classList.add('subject-row', 'fade-in');
         subjectRow.innerHTML = `
-            <input type="text" class="subject-name-input" placeholder="Subject ${index} Name" aria-label="Subject ${index} Name">
+            <input type="text" class="subject-name-input" placeholder="Subject" aria-label="Subject ${index} Name">
             <div class="subject-inputs">
                 <input type="number" class="grade-input" placeholder="Grade" step="0.01" aria-label="Grade for Subject ${index}">
                 <input type="number" class="units-input" placeholder="Units" step="0.1" aria-label="Units for Subject ${index}">
