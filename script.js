@@ -35,6 +35,20 @@ const getLatinHonor = (gwa) => {
         return null;
     };
 
+    const getGwaMessage = (gwa) => {
+        let message = '';
+        if (gwa < 3.0) {
+            message = 'muntik kana, Keep it up! haha';
+        } else if (gwa === 3.0) {
+            message = 'safe ka pa ropa, keep it up!';
+        } else if (gwa > 3.0 && gwa < 5.0) {
+            message = 'bawi next sem, sipag pa sayang baon!';
+        } else if (gwa === 5.0) {
+            message = 'yari ka kay mommy and daddy! haha';
+        }
+        return message ? `<br><span class="gwa-message">${message}</span>` : '';
+    };
+
 generateBtn.addEventListener('click', () => {
         const numSubjects = parseInt(numSubjectsInput.value);
         inputsContainer.innerHTML = '';
@@ -64,52 +78,43 @@ generateBtn.addEventListener('click', () => {
     });
 
 calculateBtn.addEventListener('click', () => {
-        const gradeInputs = document.querySelectorAll('.grade-input');
-        const subjectNameInputs = document.querySelectorAll('.subject-name-input');
-        const unitInputs = document.querySelectorAll('.units-input');
-
+        const subjectRows = document.querySelectorAll('.subject-row');
         let totalWeightedGrades = 0;
         let totalUnits = 0;
-        let isValid = true;
 
-        for (let i = 0; i < gradeInputs.length; i++) {
-            const grade = parseFloat(gradeInputs[i].value);
-            const units = parseFloat(unitInputs[i].value);
+        for (let i = 0; i < subjectRows.length; i++) {
+            const row = subjectRows[i];
+            const gradeInput = row.querySelector('.grade-input');
+            const unitInput = row.querySelector('.units-input');
+            const subjectNameInput = row.querySelector('.subject-name-input');
 
-            const subjectName = subjectNameInputs[i].value.trim() || `Subject ${i + 1}`;
+            const grade = parseFloat(gradeInput.value);
+            const units = parseFloat(unitInput.value);
+            const subjectName = subjectNameInput.value.trim() || `Subject ${i + 1}`;
 
             if (isNaN(grade) || isNaN(units) || units <= 0) {
                 resultContainer.textContent = `Error: Please enter valid numbers for "${subjectName}". Units must be positive.`;
-                isValid = false;
-                break;
+                return; // Exit early on validation failure
             }
 
             totalWeightedGrades += grade * units;
             totalUnits += units;
         }
 
-        if (isValid) {
-            if (totalUnits > 0) {
-                const gwa = totalWeightedGrades / totalUnits;
-                const honor = getLatinHonor(gwa);
-                let messageHTML = '';
+        if (totalUnits > 0) {
+            const gwa = totalWeightedGrades / totalUnits;
+            const honor = getLatinHonor(gwa);
+            let messageHTML = '';
 
-                if (honor) {
-                    messageHTML = `<br><span class="latin-honor ${honor.className}">${honor.text}</span>`;
-                } else if (gwa < 3.0) {
-                    messageHTML = `<br><span class="gwa-message"> muntik kana, Keep it up! haha</span>`;
-                } else if (gwa === 3.0) {
-                    messageHTML = `<br><span class="gwa-message"> safe ka pa ropa, keep it up!</span>`;
-                } else if (gwa > 3.0 && gwa < 5.0) {
-                    messageHTML = `<br><span class="gwa-message"> bawi next sem, sipag pa sayang baon!</span>`;
-                } else if (gwa === 5.0) {
-                    messageHTML = `<br><span class="gwa-message"> yari ka kay mommy and daddy! haha</span>`;
-                }
-
-                resultContainer.innerHTML = `GWA: <span>${gwa.toFixed(2)}</span>${messageHTML}`;
+            if (honor) {
+                messageHTML = `<br><span class="latin-honor ${honor.className}">${honor.text}</span>`;
             } else {
-                resultContainer.textContent = 'No units entered. Cannot calculate GWA.';
+                messageHTML = getGwaMessage(gwa);
             }
+
+            resultContainer.innerHTML = `GWA: <span>${gwa.toFixed(2)}</span>${messageHTML}`;
+        } else {
+            resultContainer.textContent = 'No units entered. Cannot calculate GWA.';
         }
     });
 });

@@ -200,32 +200,6 @@ button:hover {
     background-image: var(--cum-laude-gradient);
 }
 
-
-footer {
-    width: 100%;
-    padding: 25px 0;
-    background-color: var(--container-bg);
-    color: var(--sub-text-color);
-    font-size: 14px;
-    transition: all 0.3s ease;
-    border-top: 1px solid var(--border-color);
-}
-
-.footer-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 20px;
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-.footer-section p {
-    margin: 0;
-}
-
 .info-panel {
     max-width: 350px;
     width: 100%;
@@ -345,11 +319,5 @@ input:checked + .slider:before {
 
     #result-container {
         font-size: 20px;
-    }
-}
-
-@media (max-width: 600px) {
-    .footer-content {
-        justify-content: center;
     }
 }
